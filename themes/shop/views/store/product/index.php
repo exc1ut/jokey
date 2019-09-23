@@ -181,7 +181,7 @@ $this->breadcrumbs = [Yii::t("StoreModule.store", "Catalog")];
                         <img style="width:100px;height:75px" src="<?=$prod->getImageUrl()?>" alt="Ведро пластиковое с крышкой JETB 12 1,2 л" title="Ведро пластиковое с крышкой JETB 12 1,2 л" />
                     </a>
                 </td>
-                <td class="cell3"><a href="boxes/0000127/index.html"><?=$prod->name?></a></td>
+                <td class="cell3"><a href="/store/<?=$prod->category->slug?>/<?=$prod->name?>.html"><?=$prod->name?></a></td>
                 <td class="cell4"><?=$prod->weight?></td>
                 <td class="cell5"><?=$prod->length?></td>
                 <td class="cell6"><?=$prod->height?></td>

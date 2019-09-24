@@ -63,4 +63,8 @@ class SiteController extends FrontController
             );
         }
     }
+    public function actionContact()     
+    {
+        $this->render('contact');
+    }
 }

@@ -557,10 +557,6 @@ ul.dropdown-menu {
     width: 45%;
     height: auto;
 }
-.tabs-and-form .form {
-    width: 50%;
-    height: 100%;
-}
 .tabs-and-form > .form > .feedback{
     margin: 0;
     width: 312px;

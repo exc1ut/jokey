@@ -121,6 +121,7 @@ return [
             'rules' => [ // Main rules
                 '/' => 'site/index',
                 '/site' => '/site/index',
+                '/contact' => '/site/contact',
                 '/mail' => 'site/mail',
                 // For correct work of installer
                 '/install/default/<action:\w+>' => '/install/default/<action>',

@@ -111,11 +111,11 @@
             <tr>
                 
                 <td class="image cell2">
-                    <a href="/store/<?=$category->slug?>/<?=$prod->name?>.html">
+                    <a href="/store/<?=$category->slug?>/<?=$prod->slug?>.html">
                         <img style="width:100px;height:75px" src="<?=$prod->getImageUrl()?>" alt="Ведро пластиковое с крышкой JETB 12 1,2 л" title="Ведро пластиковое с крышкой JETB 12 1,2 л" />
                     </a>
                 </td>
-                <td class="cell3"><a href="boxes/0000127/index.html"><?=$prod->name?></a></td>
+                <td class="cell3"><a href="/store/<?=$category->slug?>/<?=$prod->slug?>.html"><?=$prod->name?></a></td>
                 <td class="cell4"><?=$prod->weight?></td>
                 <td class="cell5"><?=$prod->length?></td>
                 <td class="cell6"><?=$prod->height?></td>

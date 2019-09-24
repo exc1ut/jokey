@@ -1,327 +1,474 @@
-<?php
+<style>
+    #carousel-example-generic {
+        display: inline-block;
+    }
 
-/* @var $product Product */
+    /*****************************/
 
-$this->title = $product->getMetaTitle();
-$this->description = $product->getMetaDescription();
-$this->keywords = $product->getMetaKeywords();
-$this->canonical = $product->getMetaCanonical();
+    /* Plugin styles */
+    ul.thumbnails-carousel {
+        padding: 5px 0 0 0;
+        margin: 0;
+        list-style-type: none;
+        text-align: center;
+    }
 
-Yii::app()->getClientScript()->registerScriptFile($this->mainAssets . '/js/store.js', CClientScript::POS_END);
+    ul.thumbnails-carousel .center {
+        display: inline-block;
+    }
 
-$this->breadcrumbs = array_merge(
-    [Yii::t("StoreModule.store", 'Catalog') => ['/store/product/index']],
-    $product->category ? $product->category->getBreadcrumbs(true) : [],
-    [CHtml::encode($product->name)]
-);
-?>
-<div class="main__product-description grid" itemscope itemtype="http://schema.org/Product">
-    <div class="product-description">
-        <div class="product-description__img-block grid-module-6">
-            <div class="product-gallery js-product-gallery">
-                <div class="product-gallery__body">
-                    <div data-product-image class="product-gallery__img-wrap">
-                        <img src="<?= StoreImage::product($product); ?>"
-                             class="product-gallery__main-img"
-                             alt="<?= CHtml::encode($product->getImageAlt()); ?>"
-                             title="<?= CHtml::encode($product->getImageTitle()); ?>"
-                        >
-                    </div>
-                    <?php if ($product->isSpecial()): ?>
-                        <div class="product-gallery__label">
-                            <div class="product-label product-label_hit">
-                                <div class="product-label__text">Хит</div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                </div>
-                <div class="product-gallery__nav">
-                    <a itemprop="image" href="<?= StoreImage::product($product); ?>" rel="group" data-product-thumbnail
-                       class="product-gallery__nav-item">
-                        <img src="<?= $product->getImageUrl(60, 60, false); ?>" alt=""
-                             class="product-gallery__nav-img">
-                    </a>
-                    <?php foreach ($product->getImages() as $key => $image): ?>
-                        <a href="<?= $image->getImageUrl(); ?>" rel="group" data-product-thumbnail
-                           class="product-gallery__nav-item">
-                            <img src="<?= $image->getImageUrl(60, 60, false); ?>" alt=""
-                                 class="product-gallery__nav-img">
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-        <div class="product-description__entry grid-module-6">
-            <div class="entry">
-                <div class="entry__toolbar">
-                    <div class="entry__toolbar-right">
-                        <?php if(Yii::app()->hasModule('favorite')):?>
-                            <?php $this->widget('application.modules.favorite.widgets.FavoriteControl', ['product' => $product, 'view' => '_in-product']);?>
-                        <?php endif;?>
-                        <?php if(Yii::app()->hasModule('compare')):?>
-                            <a href="javascript:void(0);" class="entry__toolbar-button"><i class="fa fa-balance-scale"></i></a>
-                        <?php endif;?>
-                    </div>
-                </div>
-                <div class="entry__title">
-                    <h1 class="h1" itemprop="name"><?= CHtml::encode($product->getTitle()); ?></h1>
-                </div>
-                <div class="entry__wysiwyg">
-                    <div class="wysiwyg" itemprop="description">
-                        <?= $product->short_description; ?>
-                    </div>
-                </div>
-                <form action="<?= Yii::app()->createUrl('cart/cart/add'); ?>" method="post" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-                    <input type="hidden" name="Product[id]" value="<?= $product->id; ?>"/>
-                    <?= CHtml::hiddenField(
-                        Yii::app()->getRequest()->csrfTokenName,
-                        Yii::app()->getRequest()->csrfToken
-                    ); ?>
+    ul.thumbnails-carousel li {
+        margin-right: 5px;
+        float: left;
+        cursor: pointer;
+    }
 
-                    <?php if ($product->getVariantsGroup()): ?>
+    .controls-background-reset {
+        background: none !important;
+    }
 
-                        <div class="entry__title">
-                            <h2 class="h3 h_upcase"><?= Yii::t("StoreModule.store", "Variants"); ?></h2>
-                        </div>
+    .active-thumbnail {
+        opacity: 0.4;
+    }
 
-                        <div class="entry__variants">
-                            <?php foreach ($product->getVariantsGroup() as $title => $variantsGroup): ?>
-                                <div class="entry__variant">
-                                    <div class="entry__variant-title"><?= CHtml::encode($title); ?></div>
-                                    <div class="entry__variant-value">
-                                        <?=
-                                        CHtml::dropDownList('ProductVariant[]', null, CHtml::listData($variantsGroup, 'id', 'optionValue'), [
-                                            'empty' => '--выберите--',
-                                            'class' => 'js-select2 entry__variant-value-select noborder',
-                                            'options' => $product->getVariantsOptions()
-                                        ]); ?>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                    <div class="entry__price"><?= Yii::t("StoreModule.store", "Price"); ?>:
-                        <div class="product-price">
-                            <input type="hidden" id="base-price"
-                                   value="<?= round($product->getResultPrice(), 2); ?>"/>
-                            <span id="result-price" itemprop="price"><?= round($product->getResultPrice(), 2); ?></span>
-                            <meta itemprop="priceCurrency" content="<?= Yii::app()->getModule('store')->currency?>">
-                            <?= $product->isInStock() ? '<link itemprop="availability" href="http://schema.org/InStock">' : '<link itemprop="availability" href="http://schema.org/PreOrder">';?>
-                            <span class="ruble"> <?= Yii::t("StoreModule.store", Yii::app()->getModule('store')->currency); ?></span>
-                            <?php if ($product->hasDiscount()): ?>
-                                <div class="product-price product-price_old"><?= round($product->getBasePrice(), 2) ?><span class="ruble"> <?= Yii::t("StoreModule.store", Yii::app()->getModule('store')->currency); ?></span></div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <?php if (Yii::app()->hasModule('cart')): ?>
-                        <?php if ($product->isInStock()): ?>
-                            <div class="entry__count">
-                                <div class="entry__count-label">Кол-во:</div>
-                                <div class="entry__count-input">
-                                    <?php
-                                    $minQuantity = 1;
-                                    $maxQuantity = Yii::app()->getModule('store')->controlStockBalances ? $product->getAvailableQuantity() : 99;
-                                    ?>
-                                    <span data-min-value='<?= $minQuantity; ?>' data-max-value='<?= $maxQuantity; ?>'
-                                          class="spinput js-spinput">
-                                        <span class="spinput__minus js-spinput__minus product-quantity-decrease"></span>
-                                        <input name="Product[quantity]" value="1" class="spinput__value"
-                                               id="product-quantity-input"/>
-                                        <span class="spinput__plus js-spinput__plus product-quantity-increase"></span>
-                                    </span>
-                                </div>
-                                <div class="entry__cart-button">
-                                    <button class="btn btn_cart" id="add-product-to-cart"
-                                            data-loading-text="<?= Yii::t("StoreModule.store", "Adding"); ?>">В корзину
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="entry__subtotal">
-                                <span id="product-result-price"><?= round($product->getResultPrice(), 2); ?></span> x
-                                <span id="product-quantity">1</span> =
-                                <span id="product-total-price"><?= round($product->getResultPrice(), 2); ?></span>
-                                <span class="ruble"> <?= Yii::t("StoreModule.store", Yii::app()->getModule('store')->currency); ?></span>
-                            </div>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="product-features">
-        <div class="product-features__block product-features__block_delivery">
-            <div class="product-features__header">Доставка</div>
-            <div class="product-features__item">Почта России</div>
-            <div class="product-features__item">Курьер</div>
-            <div class="product-features__item">Самовывоз</div>
-        </div>
-        <div class="product-features__block product-features__block_payment">
-            <div class="product-features__header">Оплата</div>
-            <div class="product-features__item">Наличные</div>
-            <div class="product-features__item">Online</div>
-            <div class="product-features__item">Сбербанк</div>
-        </div>
-        <div class="product-features__block product-features__block_warranty">
-            <div class="product-features__header">Гарантии</div>
-            <div class="product-features__item">Возврат</div>
-            <div class="product-features__item">Обмен</div>
-        </div>
-    </div>
-</div>
+    .indicators-fix {
+        bottom: 70px;
+    }
 
-<div class="main__product-tabs grid">
-    <div class="tabs tabs_classic tabs_gray js-tabs">
-        <ul data-nav="data-nav" class="tabs__list">
-            <li class="tabs__item">
-                <a href="#spec" class="tabs__link"><?= Yii::t("StoreModule.store", "Characteristics"); ?></a>
-            </li>
-            <?php if (!empty($product->description)): ?>
-                <li class="tabs__item">
-                    <a href="#description" class="tabs__link"><?= Yii::t("StoreModule.store", "Description"); ?></a>
-                </li>
-            <?php endif; ?>
-            <?php if (Yii::app()->hasModule('comment')): ?>
-                <li class="tabs__item">
-                    <a href="#reviews" class="tabs__link"><?= Yii::t("StoreModule.store", "Comments"); ?></a>
-                </li>
-            <?php endif; ?>
+    .box {
+        width: 100%;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 35px;
+        border: 2px solid #fff;
+        border-radius: 20px/50px;
+        background-clip: padding-box;
+        text-align: center;
+    }
+
+    .button {
+        font-size: 1em;
+        padding: 10px 70px;
+        color: #7C8488;
+        border: 2px solid #7C8488;
+        text-decoration: none !important;
+        cursor: pointer;
+        transition: all 0.3s ease-out;
+        font-weight: bold;
+    }
+
+    .button:hover {
+        background: #7C8488;
+        color:#fff;
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        transition: opacity 500ms;
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .overlay:target {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .popup {
+        margin: 70px auto;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0);
+        border-radius: 5px;
+        width: 30%;
+        position: relative;
+        transition: all 5s ease-in-out;
+    }
+
+    .popup h2 {
+        margin-top: 0;
+        color: #333;
+        font-family: Tahoma, Arial, sans-serif;
+    }
+
+    .popup .close {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        transition: all 200ms;
+        font-size: 30px;
+        font-weight: bold;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .popup .close:hover {
+        color: #7C8488;
+    }
+
+    .popup .modelContent {
+        max-height: 30%;
+        overflow: auto;
+    }
+
+    @media screen and (max-width: 700px) {
+        .box {
+            width: 70%;
+        }
+
+        .popup {
+            width: 70%;
+        }
+    }
+
+
+
+    #feedback-page {
+        text-align: center;
+    }
+
+    #form-main {
+        width: 100%;
+        float: left;
+        padding-top: 0px;
+    }
+
+    #form-div {
+        background-color: rgba(72, 72, 72, 0.6);
+        padding-left: 35px;
+        padding-right: 35px;
+        padding-top: 35px;
+        padding-bottom: 50px;
+        width: 450px;
+        float: left;
+        left: 50%;
+        position: absolute;
+        margin-top: 30px;
+        margin-left: -260px;
+        -moz-border-radius: 7px;
+        -webkit-border-radius: 7px;
+    }
+
+    .feedback-input {
+        color: #3c3c3c;
+        font-family: Helvetica, Arial, sans-serif;
+        font-weight: 500;
+        font-size: 18px;
+        border-radius: 0;
+        line-height: 22px;
+        background-color: #fbfbfb;
+        padding: 13px 13px 13px 54px;
+        margin-bottom: 10px;
+        width: 100%;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+        box-sizing: border-box;
+        border: 3px solid rgba(0, 0, 0, 0);
+    }
+
+    .feedback-input:focus {
+        background: #fff;
+        box-shadow: 0;
+        border: 3px solid #7C8488;
+        color: #7C8488;
+        outline: none;
+        padding: 13px 13px 13px 54px;
+    }
+
+    .focused {
+        color: #7C8488;
+        border: #7C8488 solid 3px;
+    }
+
+    /* Icons ---------------------------------- */
+    #name {
+        background-image: url(http://rexkirby.com/kirbyandson/images/name.svg);
+        background-size: 30px 30px;
+        background-position: 11px 8px;
+        background-repeat: no-repeat;
+    }
+
+    #name:focus {
+        background-image: url(http://rexkirby.com/kirbyandson/images/name.svg);
+        background-size: 30px 30px;
+        background-position: 8px 5px;
+        background-position: 11px 8px;
+        background-repeat: no-repeat;
+    }
+
+    #email {
+        background-image: url(http://rexkirby.com/kirbyandson/images/email.svg);
+        background-size: 30px 30px;
+        background-position: 11px 8px;
+        background-repeat: no-repeat;
+    }
+
+    #email:focus {
+        background-image: url(http://rexkirby.com/kirbyandson/images/email.svg);
+        background-size: 30px 30px;
+        background-position: 11px 8px;
+        background-repeat: no-repeat;
+    }
+
+    #comment {
+        background-image: url(http://rexkirby.com/kirbyandson/images/comment.svg);
+        background-size: 30px 30px;
+        background-position: 11px 8px;
+        background-repeat: no-repeat;
+    }
+
+    textarea {
+        width: 100%;
+        height: 150px;
+        line-height: 150%;
+        resize: vertical;
+    }
+
+    input:hover,
+    textarea:hover,
+    input:focus,
+    textarea:focus {
+        background-color: white;
+    }
+
+    #button-blue {
+        font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+        float: left;
+        width: 100%;
+        border: #fbfbfb solid 4px;
+        cursor: pointer;
+        background-color: #7C8488;
+        color: white;
+        font-size: 24px;
+        padding-top: 22px;
+        padding-bottom: 22px;
+        -webkit-transition: all 0.3s;
+        -moz-transition: all 0.3s;
+        transition: all 0.3s;
+        margin-top: -4px;
+        font-weight: 700;
+    }
+
+    #button-blue:hover {
+        background-color: rgba(0, 0, 0, 0);
+        color: #0493bd;
+    }
+
+    .submit:hover {
+        color: #3498db;
+    }
+
+    .ease {
+        width: 0px;
+        height: 74px;
+        background-color: #fbfbfb;
+        -webkit-transition: .3s ease;
+        -moz-transition: .3s ease;
+        -o-transition: .3s ease;
+        -ms-transition: .3s ease;
+        transition: .3s ease;
+    }
+
+    .submit:hover .ease {
+        width: 100%;
+        background-color: white;
+    }
+
+    @media only screen and (max-width: 580px) {
+        #form-div {
+            left: 3%;
+            margin-right: 3%;
+            width: 88%;
+            margin-left: 0;
+            padding-left: 3%;
+            padding-right: 3%;
+        }
+    }
+</style>
+<div class="inside" style="    display: flex;
+    justify-content: flex-start;
+    
+    width: 100%;">
+
+    <div class="sidebar" style="margin-right:50px">
+
+        <ul class="leftNav">
+            <? foreach ($category as $cat) : ?>
+                <li><a href="/store/<?= $cat->slug ?>"><?= $cat->name ?></a></li>
+            <? endforeach; ?>
+
         </ul>
-        <div class="tabs__bodies js-tabs-bodies">
-            <div id="spec" class="tabs__body js-tab">
-                <div class="product-spec">
-                    <div class="product-spec__body">
-                        <?php if ($product->producer_id): ?>
-                            <dl class="product-spec-item">
-                                <dt class="product-spec-item__name">
-                                    <span class="product-spec-item__name-inner">
-                                        <?= Yii::t("StoreModule.store", "Producer"); ?>
-                                    </span>
-                                </dt>
-                                <dd class="product-spec-item__value">
-                                    <span class="product-spec-item__value-inner">
-                                        <?php if($product->getProducerName()):?>
-                                            <?= CHtml::link($product->getProducerName(), ['/store/producer/view', 'slug' => $product->producer->slug]);?>
-                                        <?php endif;?>
-                                    </span>
-                                </dd>
-                            </dl>
-                        <?php endif; ?>
 
-                        <?php if ($product->sku): ?>
-                            <dl class="product-spec-item">
-                                <dt class="product-spec-item__name">
-                                    <span class="product-spec-item__name-inner">
-                                        <?= Yii::t("StoreModule.store", "SKU"); ?>
-                                    </span>
-                                </dt>
-                                <dd class="product-spec-item__value">
-                                    <span class="product-spec-item__value-inner">
-                                        <?= CHtml::encode($product->sku); ?>
-                                    </span>
-                                </dd>
-                            </dl>
-                        <?php endif; ?>
+        <div class="adv"></div>
 
-                        <?php if ($product->length): ?>
-                            <dl class="product-spec-item">
-                                <dt class="product-spec-item__name">
-                                    <span class="product-spec-item__name-inner">
-                                        <?= Yii::t("StoreModule.store", "Length"); ?>
-                                    </span>
-                                </dt>
-                                <dd class="product-spec-item__value">
-                                    <span class="product-spec-item__value-inner">
-                                        <?= round($product->length, 2); ?> <?= Yii::t("StoreModule.store", "m"); ?>
-                                    </span>
-                                </dd>
-                            </dl>
-                        <?php endif; ?>
+    </div>
 
-                        <?php if ($product->width): ?>
-                            <dl class="product-spec-item">
-                                <dt class="product-spec-item__name">
-                                    <span class="product-spec-item__name-inner">
-                                        <?= Yii::t("StoreModule.store", "Width"); ?>
-                                    </span>
-                                </dt>
-                                <dd class="product-spec-item__value">
-                                    <span class="product-spec-item__value-inner">
-                                        <?= round($product->width, 2); ?> <?= Yii::t("StoreModule.store", "m"); ?>
-                                    </span>
-                                </dd>
-                            </dl>
-                        <?php endif; ?>
+    <div class="content" style="width:100%">
 
-                        <?php if ($product->height): ?>
-                            <dl class="product-spec-item">
-                                <dt class="product-spec-item__name">
-                                    <span class="product-spec-item__name-inner">
-                                        <?= Yii::t("StoreModule.store", "Height"); ?>
-                                    </span>
-                                </dt>
-                                <dd class="product-spec-item__value">
-                                    <span class="product-spec-item__value-inner">
-                                        <?= round($product->height, 2); ?> <?= Yii::t("StoreModule.store", "m"); ?>
-                                    </span>
-                                </dd>
-                            </dl>
-                        <?php endif; ?>
+        <div class="serieInfo">
+            <div class="back">
+                <a href="/products/">К выбору из всех моделей</a></div>
+            <div class="hidden">
 
-                        <?php if ($product->weight): ?>
-                            <dl class="product-spec-item">
-                                <dt class="product-spec-item__name">
-                                    <span class="product-spec-item__name-inner">
-                                        <?= Yii::t("StoreModule.store", "Weight"); ?>
-                                    </span>
-                                </dt>
-                                <dd class="product-spec-item__value">
-                                    <span class="product-spec-item__value-inner">
-                                        <?= round($product->weight, 2); ?> <?= Yii::t("StoreModule.store", "kg"); ?>
-                                    </span>
-                                </dd>
-                            </dl>
-                        <?php endif; ?>
+            </div>
+        </div>
+        <div class="productName">
+            <div class="specification">
+                <p><a href="/webroot/delivery/files/JETB_12.pdf"><img src="/webroot/delivery/i/pdf-icon.png" alt="">Спецификация</a></p>
+                <p>pdf, 290 Kb</p>
+            </div>
+            <h1><?= $product->name ?></h1>
+            <h2><?= $product->slug ?></h2>
+        </div>
+        <div class="productReview">
+            <div class="leftCol">
 
-                        <?php foreach ($product->getAttributeGroups() as $groupName => $items): ?>
-                            <h2 class="h3 product-spec__header"><?= CHtml::encode($groupName); ?></h2>
-                            <?php foreach ($items as $attribute): ?>
-                                <dl class="product-spec-item">
-                                    <dt class="product-spec-item__name">
-                                        <span class="product-spec-item__name-inner">
-                                            <?= CHtml::encode($attribute->title); ?>
-                                        </span>
-                                    </dt>
-                                    <dd class="product-spec-item__value">
-                                        <span class="product-spec-item__value-inner">
-                                            <?= AttributeRender::renderValue($attribute, $product->attribute($attribute)); ?>
-                                        </span>
-                                    </dd>
-                                </dl>
-                            <?php endforeach; ?>
-                        <?php endforeach; ?>
+
+                <!-- bootstrap carousel -->
+                <div id="carousel-example-generic" class="carousel slide" data-ride="carousel" data-interval="false">
+                    <!-- Indicators -->
+
+
+                    <!-- Wrapper for slides -->
+                    <div class="carousel-inner">
+                        <div class="item active srle">
+                            <img src="<?= $product->getImageUrl(250, 250) ?>" alt="1.jpg" class="img-responsive">
+                        </div>
+                        <? foreach ($product->images as $key => $image) : ?>
+                            <div class="item">
+                                <img src="<?= $image->getImageUrl(250, 250) ?>" alt="1.jpg" class="img-responsive">
+                            </div>
+
+                        <? endforeach; ?>
+                    </div>
+
+                    <!-- Controls -->
+                    <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </a>
+                    <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </a>
+
+                    <!-- Thumbnails -->
+                    <ul class="thumbnails-carousel clearfix">
+                        <li><img src="<?= $product->getImageUrl(50, 50) ?>" alt="1_tn.jpg"></li>
+                        <? foreach ($product->images as $key => $image) : ?>
+                            <li><img src="<?= $image->getImageUrl(50, 50) ?>" alt="1_tn.jpg"></li>
+
+                        <? endforeach; ?>
+
+
+                    </ul>
+                </div>
+
+
+
+               
+                <div class="box">
+                    <a class="button" href="#popup1">Купить</a>
+                </div>
+                <div id="popup1" class="overlay">
+                    <div class="popup">
+                        <a class="close" href="#">&times;</a>
+                        <div id="form-main">
+                            <div id="form-div">
+                                <form class="form" method="post" action="/mail" id="form1">
+                                    <input type="hidden" name="<?=Yii::app()->request->csrfTokenName?>" value="<?=Yii::app()->request->csrfToken;?>">
+                                    <p class="name">
+                                        <input name="name" type="text" class="validate[required,custom[onlyLetter],length[0,100]] feedback-input" placeholder="Name" id="name" />
+                                    </p>
+
+                                    <p class="email">
+                                        <input name="email" type="text" class="validate[required,custom[email]] feedback-input" id="email" placeholder="Email" />
+                                    </p>
+
+                                    <p class="text">
+                                        <textarea name="text" class="validate[required,length[6,300]] feedback-input" id="comment" placeholder="Comment"></textarea>
+                                    </p>
+
+
+                                    <div class="submit">
+                                        <input type="submit" value="SEND" id="button-blue" />
+                                        <div class="ease"></div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <?php if (!empty($product->description)): ?>
-                <div id="description" class="tabs__body js-tab">
-                    <div class="wysiwyg">
-                        <?= $product->description ?>
-                    </div>
-                </div>
-            <?php endif; ?>
-            <?php if (Yii::app()->hasModule('comment')): ?>
-                <div id="reviews" class="tabs__body js-tab">
-                    <div class="product-reviews">
-                        <?php $this->widget('application.modules.comment.widgets.CommentsWidget', [
-                            'redirectTo' => ProductHelper::getUrl($product),
-                            'model' => $product,
-                        ]); ?>
-                    </div>
-                </div>
-            <?php endif; ?>
+
+
+                <?= $product->description ?>
+            </div>
+            <?= $product->short_description ?>
+            <?= $product->data ?>
+
         </div>
+
     </div>
-</div>
+    <script>
+        // thumbnails.carousel.js jQuery plugin
+        ;
+        (function(window, $, undefined) {
 
-<?php $this->widget('application.modules.store.widgets.LinkedProductsWidget', ['product' => $product, 'code' => null,]); ?>
+            var conf = {
+                center: true,
+                backgroundControl: false
+            };
 
+            var cache = {
+                $carouselContainer: $('.thumbnails-carousel').parent(),
+                $thumbnailsLi: $('.thumbnails-carousel li'),
+                $controls: $('.thumbnails-carousel').parent().find('.carousel-control')
+            };
+
+            function init() {
+                cache.$carouselContainer.find('ol.carousel-indicators').addClass('indicators-fix');
+                cache.$thumbnailsLi.first().addClass('active-thumbnail');
+
+                if (!conf.backgroundControl) {
+                    cache.$carouselContainer.find('.carousel-control').addClass('controls-background-reset');
+                } else {
+                    cache.$controls.height(cache.$carouselContainer.find('.carousel-inner').height());
+                }
+
+                if (conf.center) {
+                    cache.$thumbnailsLi.wrapAll("<div class='center clearfix'></div>");
+                }
+            }
+
+            function refreshOpacities(domEl) {
+                cache.$thumbnailsLi.removeClass('active-thumbnail');
+                cache.$thumbnailsLi.eq($(domEl).index()).addClass('active-thumbnail');
+            }
+
+            function bindUiActions() {
+                cache.$carouselContainer.on('slide.bs.carousel', function(e) {
+                    refreshOpacities(e.relatedTarget);
+                });
+
+                cache.$thumbnailsLi.click(function() {
+                    cache.$carouselContainer.carousel($(this).index());
+                });
+            }
+
+            $.fn.thumbnailsCarousel = function(options) {
+                conf = $.extend(conf, options);
+
+                init();
+                bindUiActions();
+
+                return this;
+            }
+
+        })(window, jQuery);
+
+        $('.thumbnails-carousel').thumbnailsCarousel();
+    </script>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Дефолтный контроллер сайта:
  *
@@ -10,6 +11,7 @@
  * @link     https://yupe.ru
  *
  **/
+
 namespace application\controllers;
 
 use yupe\components\controllers\FrontController;
@@ -23,9 +25,21 @@ class SiteController extends FrontController
      */
     public function actionIndex()
     {
+
         $this->render('index');
     }
+    public function actionMail()
+    {
+        $to      = 'umid19999@gmail.com';
+        $subject = 'the subject';
+        $message = 'hello';
+        $headers = 'From: webmaster@example.com' . "\r\n" .
+            'Reply-To: webmaster@example.com' . "\r\n" .
+            'X-Mailer: PHP/' . phpversion();
 
+        var_dump(mail($to, $subject, $message, $headers));
+        $this->render('index');
+    }
     /**
      * Отображение для ошибок:
      *

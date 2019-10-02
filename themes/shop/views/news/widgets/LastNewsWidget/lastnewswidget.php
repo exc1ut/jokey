@@ -1,20 +1,34 @@
 <?php Yii::import('application.modules.news.NewsModule'); ?>
 
 <div class="news">
+    <div class="introduction">
+        <div class="body-part">
+            <h1>Новости</h1>
+        </div>
+        <div class="bottom_border" style="height: 1px;width: 20%;border: 1px solid grey;margin: 1.5rem auto;"></div>
+    </div>
+    <div class="container-section">
+        <?php if (isset($models) && $models != []) : ?>
+            <?php foreach ($models as $model) : ?>
 
-
-    <?php if (isset($models) && $models != []) : ?>
-        <?php foreach ($models as $model) : ?>
-            <div class="shortNews">
-                <a href="/news/<?=$model->slug?>.html"><img src="/uploads/news/<?=$model->image?>" width="150" alt="" title=""></a>
-                <div class="body">
-                    <div class="date"><?=$model->date?></div>
-                    <h3><a href="/news/<?=$model->slug?>.html"><?=$model->title?></a></h3>
-                    <p></p>
+                <div class="room">
+                    <div class="img-box">
+                        <a href="/news/<?= $model->slug ?>.html"><img src="/uploads/news/<?= $model->image ?>" alt=".."></a>
+                    </div>
+                    <a href="/news/<?= $model->slug ?>.html">
+                        <div class="content">
+                            <h2><?= $model->title ?></h2>
+                            <p><?= $model->short_text ?></p>
+                        </div>
+                    </a>
                 </div>
-            </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+
+
+
+
 
 
 </div>

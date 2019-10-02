@@ -99,7 +99,7 @@ $categories = StoreCategory::model()->findAll();
 				<? endforeach ?>
 			</ul>
 			<ul class="contactsList">
-				<li class="caption"><a href="/contact">Контакты</a></li>
+				<li class="caption"><a href="/contacta">Контакты</a></li>
 			</ul>
 			<ul class="aboutList">
 				<li class="caption"><a href="/news">Новости Jokey</a></li>
@@ -147,6 +147,7 @@ $categories = StoreCategory::model()->findAll();
 	Yii::app()->getClientScript()->registerScriptFile($this->mainAssets . '/js/jquery.cycle.all.min.js');
 	Yii::app()->getClientScript()->registerScriptFile($this->mainAssets . '/js/owl.carousel.min.js');
 	Yii::app()->getClientScript()->registerScriptFile($this->mainAssets . '/js/main.js');
+	Yii::app()->getClientScript()->registerScriptFile($this->mainAssets . '/js/popper.js');
 	?>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.touchswipe/1.6.4/jquery.touchSwipe.min.js">
 	</script>

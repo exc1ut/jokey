@@ -12,17 +12,15 @@ $images = Image::model()->findAll($criteria);
 
 
 <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
-	<!-- Indicators -->
+
 	<ol class="carousel-indicators">
 
 		<?php foreach ($images as $key => $image) : ?>
 
 			<li data-target="#carousel-example-generic" data-slide-to="<?= $key ?>" class="<? if ($key == 0) echo "active" ?>"></li>
-
+			
 		<?php endforeach; ?>
 	</ol>
-
-	<!-- Wrapper for slides -->
 	<div class="carousel-inner" role="listbox">
 		<?php foreach ($images as $key => $image) : ?>
 			<div class="item <? if ($key == 0) echo "active" ?>">
@@ -34,8 +32,8 @@ $images = Image::model()->findAll($criteria);
 			</div>
 		<?php endforeach; ?>
 	</div>
+	
 
-	<!-- Controls -->
 	<a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
 		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
 		<span class="sr-only">Previous</span>
@@ -45,36 +43,42 @@ $images = Image::model()->findAll($criteria);
 		<span class="sr-only">Next</span>
 	</a>
 </div>
+<div class="wrapper">
+<?php foreach ($images as $key => $image) : ?>
+<div data-target="#carousel-example-generic" data-slide-to="<?= $key ?>"  class="item-wrapper">
+    <img src="https://webdevfrontend.github.io/project/img/p1.png" alt="..."><?= $image->alt; ?>
+    <div class="details" id="1">
+      <p><?= $image->name; ?></p>
+    </div>
+  </div>
+<?php endforeach; ?>
+</div>
+
 
 <h1 class="main-h1">Пластиковые ведра и другая упаковка от производителя Jokey</h1>
-<div class="promo">
-	<div class="video">
-
-		<p style="max-wid">
-			<?php $this->widget(
+<?php $this->widget(
+		"application.modules.news.widgets.lastnewswidget"
+	);
+	?>
+<div class="video-part">
+  <div class="row">
+    <div class="col-md-6">
+	<?php $this->widget(
 				"application.modules.contentblock.widgets.ContentBlockWidget",
 				array("code" => "youtube")
 			);
 			?>
-
-		</p>
-
-
-		<div style="width:450px" class="caption">
-			<p>
-				<?php $this->widget(
+    </div>
+    <div class="col-md-6">
+      <h3>Lorem ipsum dolor sit amet, consectetur adipisicing elit</h3>
+      <?php $this->widget(
 					"application.modules.contentblock.widgets.ContentBlockWidget",
 					array("code" => "youtube-zagolovok")
 				);
 				?>
-			</p>
-		</div>
+    </div>
+  </div>
 
-	</div>
-	<?php $this->widget(
-		"application.modules.news.widgets.lastnewswidget"
-	);
-	?>
 </div>
 <?php $this->widget(
 	"application.modules.contentblock.widgets.ContentBlockTabs",

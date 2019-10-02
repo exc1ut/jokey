@@ -205,7 +205,7 @@ a.clearLink:hover {background:#ebf0f3 url("../i/params-bg-hover.html") repeat-x 
                         position: relative;}         
 .products {width:719px;margin:0 -38px 30px -39px;}
 .products.fixed {position:fixed;top:0;}
-.productsHead {width:719px;margin:0 -38px 0 -39px;position:relative;}
+.productsHead {margin:0 -38px 0 -39px;position:relative;}
 .productsHead .products {width:719px;margin:0;}
 .products th {background:#ebeef0 url("../i/products-th.gif") repeat-y 0 0;border-top:1px solid #c8d4db;border-bottom:1px solid #c8d4db;color:#484c4f;font:11px Arial;padding:8px 10px;text-align:left;}
 .products th.first {padding-left:39px;background-image:none;}
@@ -850,6 +850,122 @@ h5 {
     background-position: center;
     background-repeat: no-repeat;
   }
-  .header {
-    width:100%;
-    }
+  .wrapper{
+
+	width: 100%;
+	height: 100%;
+	display: flex;
+	margin: 0 auto;
+}
+.item-wrapper{
+    flex-grow: 1;
+	border-right: 1px solid #aaa;
+	background: grey;
+	color: #fff;
+	align-items: center;
+	text-align: center;
+	padding: 2rem 2rem;
+	cursor: pointer;
+	position: relative;
+}
+.item-wrapper .details{
+	opacity: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: rgba(0,0,0,0.5);
+	padding: .35rem .5rem;
+	transition: 0.3s;
+    overflow-y: hidden;
+    width: 100%;
+    height: 100%;
+
+}
+.item-wrapper:hover{
+	background-color: #aaa;
+}
+.item-wrapper:hover .details{
+    opacity: 1;
+    transform:translateY(-74px);
+    z-index: 10000;
+}
+.item-wrapper img{
+     width: 40px;
+     height: 35px;
+     background-position: center;
+     background-size: cover;
+}
+/******************************************************/
+.introduction{
+	margin-top: 4rem;
+	justify-content: center;
+	align-items: center;
+	text-align:center;
+}
+
+.container-section{
+	max-width: 1120px;
+	margin: 3rem auto;
+	position: relative;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	transform-style: preserve-3d;
+}
+.container-section .room{
+	position: relative;
+	width: 350px;
+	height: 300px;
+	background: #fff;
+	margin: auto .5rem;
+	box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+	transition: 0.5s;
+	overflow: hidden;
+	transform-style: preserve-3d;
+	margin: 1rem auto;
+}
+.container-section .room .img-box{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+.container-section .room img{
+	width: 100%;
+	height: 100%;
+	background-position: center;
+	background-size: cover;
+}
+
+.container-section .room .content{
+	position: absolute;
+	width: 90%;
+	height: 100%;
+	top: 150%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	transition: .7s;
+	background: rgba(0,0,0,0.8);
+	color: #fff;
+	padding: 1rem 1rem;
+}
+.container-section .room:hover .content{
+   top: 60%;
+   padding: 1.5rem 1.5rem;
+}
+
+.container-section:hover .room{
+	transform: perspective(500px) rotateY(20deg);
+}
+.container-section .room:hover{
+    transform: perspective(500px) rotateY(0deg);	
+}
+.container-section .room:hover ~.room{
+	transform: perspective(500px) rotateY(-20deg);
+}
+
+
+.video-part {
+    margin: 100px 0;
+}

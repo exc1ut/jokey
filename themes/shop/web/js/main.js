@@ -90,18 +90,6 @@ $(document).ready(function(){
 	// });
 	
 	// Fixed products table head
-	if($('.productsHead').length){
-		var top = $('.productsHead').offset().top;
-		$(window).scroll(function (event) {
-			var y = $(this).scrollTop();
-			if (y >= top) {
-			  $('.productsHead .products').addClass('fixed');
-			} else {
-			  $('.productsHead .products').removeClass('fixed');
-			}
-		});
-		$(window).scroll();
-	};
 	
 	if($('#cf-form').length > 0)
 	{
